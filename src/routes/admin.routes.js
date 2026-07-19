@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { dashboardStats, listUsers, approveAgent, setAgentTerms, allBookings } from '../controllers/admin.controller.js';
+import { protect, authorize } from '../middleware/auth.js';
+const r = Router();
+r.use(protect, authorize('admin'));
+r.get('/stats', dashboardStats);
+r.get('/users', listUsers);
+r.put('/agents/:id/approve', approveAgent);
+r.put('/agents/:id/terms', setAgentTerms);
+r.get('/bookings', allBookings);
+export default r;

@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { listPackages, bestSellingPackages, trendingPackages, packagesByCategory, getPackage, createPackage, updatePackage, deletePackage } from '../controllers/package.controller.js';
+import { protect, authorize } from '../middleware/auth.js';
+const r = Router();
+r.get('/', listPackages);
+r.get('/bestselling', bestSellingPackages);
+r.get('/trending', trendingPackages);
+r.get('/category/:slug', packagesByCategory);
+r.get('/:slug', getPackage);
+r.post('/', protect, authorize('admin'), createPackage);
+r.put('/:id', protect, authorize('admin'), updatePackage);
+r.delete('/:id', protect, authorize('admin'), deletePackage);
+export default r;

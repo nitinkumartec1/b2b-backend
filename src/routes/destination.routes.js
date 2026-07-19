@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { listDestinations, popularDestinations, getDestination, createDestination, updateDestination, deleteDestination } from '../controllers/destination.controller.js';
+import { protect, authorize } from '../middleware/auth.js';
+const r = Router();
+r.get('/', listDestinations);
+r.get('/popular', popularDestinations);
+r.get('/:slug', getDestination);
+r.post('/', protect, authorize('admin'), createDestination);
+r.put('/:id', protect, authorize('admin'), updateDestination);
+r.delete('/:id', protect, authorize('admin'), deleteDestination);
+export default r;
