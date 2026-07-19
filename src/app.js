@@ -61,6 +61,15 @@ app.get('/api/health', (req, res) => res.json({
   ts: Date.now() 
 }));
 
+// Root and Favicon routes to prevent 404 logs on Vercel
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+app.get('/favicon.png', (req, res) => res.status(204).end());
+app.get('/', (req, res) => res.json({ 
+  success: true, 
+  message: 'B2BHolidays API is running.',
+  version: '1.0.0'
+}));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/packages', packageRoutes);
