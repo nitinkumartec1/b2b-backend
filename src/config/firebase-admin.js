@@ -1,28 +1,29 @@
-import admin from 'firebase-admin';
+import { getApps, initializeApp, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import logger from '../utils/logger.js';
 
 /**
- * Lazily initializes Firebase Admin SDK.
+ * Lazily initializes Firebase Admin SDK and returns the Auth instance.
  * Only runs when actually called (not at module load time).
  * Returns null if FIREBASE_SERVICE_ACCOUNT is not configured.
  */
-export function getFirebaseAdmin() {
-  if (admin.apps.length > 0) {
-    return admin;
+export function getFirebaseAuthAdmin() {
+  if (getApps().length > 0) {
+    return getAuth();
   }
 
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
   if (!raw) {
-    logger.warn('FIREBASE_SERVICE_ACCOUNT env var is not set. Phone verification will not work.');
+    logger.warn('FIREBASE_SERVICE_ACCOUNT env var is not set. Auth verification will not work.');
     return null;
   }
 
   try {
     const serviceAccount = JSON.parse(raw);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+    const app = initializeApp({
+      credential: cert(serviceAccount),
     });
-    return admin;
+    return getAuth(app);
   } catch (err) {
     logger.error('Failed to initialize Firebase Admin SDK:', err.message);
     return null;

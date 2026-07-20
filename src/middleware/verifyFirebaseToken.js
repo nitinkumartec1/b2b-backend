@@ -1,9 +1,9 @@
-import { getFirebaseAdmin } from '../config/firebase-admin.js';
+import { getFirebaseAuthAdmin } from '../config/firebase-admin.js';
 import logger from '../utils/logger.js';
 
 /**
  * Middleware to verify Firebase ID token from the Authorization header.
- * Attaches decoded user info (including phone_number) to req.firebaseUser.
+ * Attaches decoded user info (including email) to req.firebaseUser.
  */
 export const verifyFirebaseToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -15,18 +15,18 @@ export const verifyFirebaseToken = async (req, res, next) => {
     });
   }
 
-  const firebaseAdmin = getFirebaseAdmin();
-  if (!firebaseAdmin) {
+  const auth = getFirebaseAuthAdmin();
+  if (!auth) {
     return res.status(503).json({
       success: false,
-      message: 'Phone verification service is not configured. Please contact support.'
+      message: 'Authentication service is not configured. Please contact support.'
     });
   }
 
   const idToken = authHeader.split('Bearer ')[1];
 
   try {
-    const decoded = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const decoded = await auth.verifyIdToken(idToken);
 
     if (!decoded.email) {
       return res.status(403).json({
