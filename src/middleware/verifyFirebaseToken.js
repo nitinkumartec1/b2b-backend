@@ -1,4 +1,4 @@
-import { getFirebaseAuthAdmin } from '../config/firebase-admin.js';
+import { getFirebaseAdmin } from '../config/firebase-admin.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -15,8 +15,8 @@ export const verifyFirebaseToken = async (req, res, next) => {
     });
   }
 
-  const auth = getFirebaseAuthAdmin();
-  if (!auth) {
+  const firebaseAdmin = getFirebaseAdmin();
+  if (!firebaseAdmin) {
     return res.status(503).json({
       success: false,
       message: 'Authentication service is not configured. Please contact support.'
@@ -26,7 +26,7 @@ export const verifyFirebaseToken = async (req, res, next) => {
   const idToken = authHeader.split('Bearer ')[1];
 
   try {
-    const decoded = await auth.verifyIdToken(idToken);
+    const decoded = await firebaseAdmin.auth().verifyIdToken(idToken);
 
     if (!decoded.email) {
       return res.status(403).json({

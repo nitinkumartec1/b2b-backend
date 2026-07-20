@@ -1,15 +1,14 @@
-import { getApps, initializeApp, cert } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
+import admin from 'firebase-admin';
 import logger from '../utils/logger.js';
 
 /**
- * Lazily initializes Firebase Admin SDK and returns the Auth instance.
+ * Lazily initializes Firebase Admin SDK.
  * Only runs when actually called (not at module load time).
  * Returns null if FIREBASE_SERVICE_ACCOUNT is not configured.
  */
-export function getFirebaseAuthAdmin() {
-  if (getApps().length > 0) {
-    return getAuth();
+export function getFirebaseAdmin() {
+  if (admin.apps.length > 0) {
+    return admin;
   }
 
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
@@ -20,10 +19,10 @@ export function getFirebaseAuthAdmin() {
 
   try {
     const serviceAccount = JSON.parse(raw);
-    const app = initializeApp({
-      credential: cert(serviceAccount),
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
     });
-    return getAuth(app);
+    return admin;
   } catch (err) {
     logger.error('Failed to initialize Firebase Admin SDK:', err.message);
     return null;
