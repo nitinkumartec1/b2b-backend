@@ -11,7 +11,7 @@ export const verifyFirebaseToken = async (req, res, next) => {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
       success: false,
-      message: 'Phone verification required. Please verify your mobile number before submitting an enquiry.'
+      message: 'Sign in required. Please sign in before submitting an enquiry.'
     });
   }
 
@@ -28,16 +28,16 @@ export const verifyFirebaseToken = async (req, res, next) => {
   try {
     const decoded = await firebaseAdmin.auth().verifyIdToken(idToken);
 
-    if (!decoded.phone_number) {
+    if (!decoded.email) {
       return res.status(403).json({
         success: false,
-        message: 'Phone number not verified. Please verify your mobile number.'
+        message: 'Email address not verified. Please verify your email.'
       });
     }
 
     req.firebaseUser = {
       uid: decoded.uid,
-      phone: decoded.phone_number,
+      email: decoded.email,
     };
 
     next();
@@ -45,7 +45,7 @@ export const verifyFirebaseToken = async (req, res, next) => {
     logger.error('Firebase token verification failed:', error.message);
     return res.status(401).json({
       success: false,
-      message: 'Invalid or expired verification. Please verify your phone number again.'
+      message: 'Invalid or expired login. Please sign in again.'
     });
   }
 };
